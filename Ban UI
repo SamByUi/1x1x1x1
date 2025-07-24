@@ -1,0 +1,180 @@
+local gui = Instance.new("ScreenGui")
+gui.Name = "BanDemoGui"
+gui.ResetOnSpawn = false
+gui.Parent = game:GetService("Players").LocalPlayer.PlayerGui
+
+local dragBall = Instance.new("ImageButton")
+dragBall.Name = "DragBall"
+dragBall.Size = UDim2.new(0, 60, 0, 60)
+dragBall.Position = UDim2.new(0, 40, 0, 250)
+dragBall.BackgroundColor3 = Color3.fromRGB(100, 150, 255)
+dragBall.Image = ""
+dragBall.Visible = true
+dragBall.Parent = gui
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 320, 0, 260)
+mainFrame.Position = UDim2.new(0, 120, 0, 180)
+mainFrame.BackgroundColor3 = Color3.fromRGB(35,35,35)
+mainFrame.BorderSizePixel = 0
+mainFrame.Visible = false
+mainFrame.Parent = gui
+
+local top = Instance.new("Frame")
+top.Size = UDim2.new(1,0,0,28)
+top.BackgroundColor3 = Color3.fromRGB(40,80,130)
+top.BorderSizePixel = 0
+top.Parent = mainFrame
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1,0,1,0)
+title.BackgroundTransparency = 1
+title.Text = "Ban 测试演示"
+title.TextColor3 = Color3.new(1,1,1)
+title.Font = Enum.Font.SourceSansBold
+title.TextScaled = true
+title.Parent = top
+
+local minimizeButton = Instance.new("TextButton")
+minimizeButton.Size = UDim2.new(0,36,1,0)
+minimizeButton.Position = UDim2.new(1,-36,0,0)
+minimizeButton.BackgroundColor3 = Color3.fromRGB(80,40,40)
+minimizeButton.Text = "-"
+minimizeButton.TextColor3 = Color3.new(1,1,1)
+minimizeButton.Font = Enum.Font.SourceSansBold
+minimizeButton.TextSize = 22
+minimizeButton.Parent = top
+
+local usernameBox = Instance.new("TextBox")
+usernameBox.Size = UDim2.new(0.85,0,0,34)
+usernameBox.Position = UDim2.new(0.075,0,0,40)
+usernameBox.PlaceholderText = "输入玩家名"
+usernameBox.Font = Enum.Font.SourceSans
+usernameBox.TextSize = 18
+usernameBox.BackgroundColor3 = Color3.fromRGB(60,60,60)
+usernameBox.TextColor3 = Color3.fromRGB(220,220,255)
+usernameBox.Parent = mainFrame
+
+local reasonBox = Instance.new("TextBox")
+reasonBox.Size = UDim2.new(0.85,0,0,34)
+reasonBox.Position = UDim2.new(0.075,0,0,84)
+reasonBox.PlaceholderText = "输入原因，可留空"
+reasonBox.Font = Enum.Font.SourceSans
+reasonBox.TextSize = 18
+reasonBox.BackgroundColor3 = Color3.fromRGB(60,60,60)
+reasonBox.TextColor3 = Color3.fromRGB(220,220,255)
+reasonBox.Parent = mainFrame
+
+local kickCheck = Instance.new("TextButton")
+kickCheck.Size = UDim2.new(0.25,0,0,28)
+kickCheck.Position = UDim2.new(0.075,0,0,132)
+kickCheck.Text = "踢出"
+kickCheck.BackgroundColor3 = Color3.fromRGB(100,100,100)
+kickCheck.TextColor3 = Color3.new(1,1,1)
+kickCheck.Font = Enum.Font.SourceSans
+kickCheck.TextSize = 18
+kickCheck.Parent = mainFrame
+
+local banCheck = Instance.new("TextButton")
+banCheck.Size = UDim2.new(0.25,0,0,28)
+banCheck.Position = UDim2.new(0.350,0,0,132)
+banCheck.Text = "永久封禁"
+banCheck.BackgroundColor3 = Color3.fromRGB(85,85,100)
+banCheck.TextColor3 = Color3.new(1,1,1)
+banCheck.Font = Enum.Font.SourceSans
+banCheck.TextSize = 18
+banCheck.Parent = mainFrame
+
+local banButton = Instance.new("TextButton")
+banButton.Size = UDim2.new(0.42,0,0,38)
+banButton.Position = UDim2.new(0.075,0,0,180)
+banButton.Text = "Ban"
+banButton.BackgroundColor3 = Color3.fromRGB(80,180,80)
+banButton.TextColor3 = Color3.new(1,1,1)
+banButton.Font = Enum.Font.SourceSansBold
+banButton.TextSize = 20
+banButton.Parent = mainFrame
+
+local unbanButton = Instance.new("TextButton")
+unbanButton.Size = UDim2.new(0.42,0,0,38)
+unbanButton.Position = UDim2.new(0.515,0,0,180)
+unbanButton.Text = "Unban"
+unbanButton.BackgroundColor3 = Color3.fromRGB(160,110,210)
+unbanButton.TextColor3 = Color3.new(1,1,1)
+unbanButton.Font = Enum.Font.SourceSansBold
+unbanButton.TextSize = 20
+unbanButton.Parent = mainFrame
+
+dragBall.MouseButton1Click:Connect(function()
+    dragBall.Visible = false
+    mainFrame.Visible = true
+end)
+minimizeButton.MouseButton1Click:Connect(function()
+    mainFrame.Visible = false
+    dragBall.Visible = true
+end)
+
+local dragging, inputOffset = false, Vector2.new()
+dragBall.InputBegan:Connect(function(input)
+    if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
+        dragging = true
+        inputOffset = input.Position - dragBall.Position
+    end
+end)
+dragBall.InputChanged:Connect(function(input)
+    if dragging and (input.UserInputType==Enum.UserInputType.MouseMovement or input.UserInputType==Enum.UserInputType.Touch) then
+        dragBall.Position = UDim2.new(0, input.Position.X - inputOffset.X, 0, input.Position.Y - inputOffset.Y)
+    end
+end)
+dragBall.InputEnded:Connect(function(input)
+    dragging = false
+end)
+
+local kickSel,banSel=false,false
+local function updateBanButton()
+    banButton.Active = kickSel or banSel
+    banButton.BackgroundColor3 = banButton.Active and Color3.new(0,1,0) or Color3.new(0.7,0.7,0.7)
+end
+updateBanButton()
+kickCheck.MouseButton1Click:Connect(function()
+    kickSel = not kickSel
+    kickCheck.BackgroundColor3 = kickSel and Color3.fromRGB(140,200,140) or Color3.fromRGB(100,100,100)
+    updateBanButton()
+end)
+banCheck.MouseButton1Click:Connect(function()
+    banSel = not banSel
+    banCheck.BackgroundColor3 = banSel and Color3.fromRGB(170,170,255) or Color3.fromRGB(85,85,100)
+    updateBanButton()
+end)
+banButton.MouseButton1Click:Connect(function()
+    if not (kickSel or banSel) then return end
+    local name = usernameBox.Text
+    local reason = reasonBox.Text
+    local text = ""
+    if banSel then
+        text = "[系统] "..name.." 被永久封禁，原因："..reason
+    elseif kickSel then
+        text = "[系统] "..name.." 被踢出，原因："..reason
+    end
+    pcall(function()
+        game:GetService("StarterGui"):SetCore("ChatMakeSystemMessage",{
+            Text = text,
+            Color = Color3.new(1,0,0),
+            Font = Enum.Font.SourceSansBold,
+            FontSize = Enum.FontSize.Size24
+        })
+    end)
+end)
+unbanButton.MouseButton1Click:Connect(function()
+    local name = usernameBox.Text
+    local text = "[系统] "..name.." 已被解除封禁"
+    pcall(function()
+        game:GetService("StarterGui"):SetCore("ChatMakeSystemMessage",{
+            Text = text,
+            Color = Color3.new(1,0,1),
+            Font = Enum.Font.SourceSansBold,
+            FontSize = Enum.FontSize.Size24
+        })
+    end)
+end)
