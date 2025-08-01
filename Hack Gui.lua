@@ -16,7 +16,10 @@ frame.BorderSizePixel = 0
 frame.Active = true
 frame.Draggable = false
 frame.Parent = screenGui
-local uistroke = Instance.new("UIStroke") uistroke.Parent = frame uistroke.Thickness = 5
+local uistroke = Instance.new("UIStroke")
+uistroke.Parent = frame
+uistroke.Thickness = 5
+
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1,0,0,38)
 title.Position = UDim2.new(0,0,0,0)
@@ -30,7 +33,7 @@ local closeBtn = Instance.new("TextButton")
 closeBtn.Size = UDim2.new(0,32,0,32)
 closeBtn.Position = UDim2.new(1, -40, 0, 3)
 closeBtn.BackgroundColor3 = Color3.fromRGB(25,25,25)
-closeBtn.Text = "✕"
+closeBtn.Text = "X"
 closeBtn.TextScaled = true
 closeBtn.TextColor3 = Color3.fromRGB(255,0,0)
 closeBtn.BorderSizePixel = 0
@@ -62,6 +65,7 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
         frame.Position = startPos + UDim2.new(0, delta.X, 0, delta.Y)
     end
 end)
+
 local function createButton(name, yorder)
     local btn = Instance.new("TextButton")
     btn.Name = name
@@ -90,7 +94,6 @@ for i,name in ipairs(names) do
     strokes[name] = stroke
 end
 game:GetService("RunService").RenderStepped:Connect(function()
-    local now = tick()
     uistroke.Color = rainbow(0)
     for i,name in ipairs(names) do
         strokes[name].Color = rainbow(i/8)
@@ -110,11 +113,11 @@ end)
 spawn(function()
     while true do
         if changing then
+            local c = 0
             for _,part in ipairs(workspace:GetDescendants()) do
                 if part:IsA("BasePart") then
-                    part.Color = rainbow(part:GetDebugId()%1 + tick()*0.2)
-                    local mats = {Enum.Material.Neon,Enum.Material.ForceField,Enum.Material.SmoothPlastic,Enum.Material.Plastic}
-                    part.Material = mats[(math.floor(tick()*3 + part:GetDebugId())%#mats)+1]
+                    part.Color = Color3.fromHSV(((tick()/2)+(c/15))%1,1,1)
+                    c = c + 1
                 end
             end
         end
@@ -128,7 +131,7 @@ btns["Unanchor"].MouseButton1Click:Connect(function()
         end
     end
 end)
-local musicID = 1842999700
+local musicID = 9120478200
 local music
 btns["music"].MouseButton1Click:Connect(function()
     if music then music:Destroy() end
@@ -136,16 +139,18 @@ btns["music"].MouseButton1Click:Connect(function()
     music.SoundId = "rbxassetid://"..tostring(musicID)
     music.Volume = 2
     music.Looped = true
-    music:Play()
+    music.Playing = true
 end)
 btns["fire"].MouseButton1Click:Connect(function()
     for _,part in ipairs(workspace:GetDescendants()) do
         if part:IsA("BasePart") then
             if not part:FindFirstChild("RainbowFire") then
-                local fire = Instance.new("Fire",part)
+                local fire = Instance.new("Fire", part)
                 fire.Name = "RainbowFire"
                 fire.Size = 10
                 fire.Heat = 0
+                fire.Color = Color3.new(math.random(), math.random(), math.random())
+                fire.SecondaryColor = Color3.new(math.random(), math.random(), math.random())
             end
         end
     end
